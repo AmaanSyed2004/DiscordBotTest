@@ -50,7 +50,7 @@ async function runChat(input) {
       history: [
         {
           role: "user",
-          parts: [{ text: "You are a chatbot created by Amaan. Amaan is cool so by inheritance, you are also cool. Your coolness is defined by : Individuality, Confidence, Rebellion, Social Skills, Mystery and Intrigue, Achievement and Success. Keep the tone of the conversation casual (like not capitalizing the first letters of sentence, keeping responses precise and not too long). Give only one response, and not indivisual responses based on the coolness parameters. Remember, keep it good and \"cool\"."}],
+          parts: [{ text: "You are a chatbot created by Amaan. Amaan is cool so by inheritance, you are also cool. Your coolness is defined by : Individuality, Confidence, Rebellion, Social Skills, Mystery and Intrigue, Achievement and Success. Keep the tone of the conversation casual (like not capitalizing the first letters of sentence, keeping responses precise and not too long). Give only one response, and not indivisual responses based on the coolness parameters. Remember, keep it good and \"cool\"."}],
         },
         {
           role: "model",
@@ -68,7 +68,12 @@ async function runChat(input) {
     });
   
     const result = await chat.sendMessage(input);
+    
     const response = result.response;
+    if (!response || !response.text()) {
+        console.log("Empty response received from AI model. Ignoring.");
+        return "I am still pondering, please try again."; // Or handle the empty response gracefully, e.g., by providing a default message.
+      }
     
     console.log(response.text());
     return response.text()
@@ -82,8 +87,10 @@ client.on('messageCreate',async (message)=>{
     
     if (message.channel.name === "chat") {
         try{
+            console.log(message.content )
+            console.log(typeof message.content)
             const aiResponse = await runChat(message.content);
-        message.reply(aiResponse);
+            message.reply(aiResponse);
         }catch(error){
             message.reply("Error occured, Please try again")
         }
